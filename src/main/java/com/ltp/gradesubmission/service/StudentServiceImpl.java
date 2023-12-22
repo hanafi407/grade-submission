@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.ltp.gradesubmission.entity.Course;
 import com.ltp.gradesubmission.entity.Student;
+import com.ltp.gradesubmission.exception.CourseNotFoundException;
 import com.ltp.gradesubmission.exception.StudentNotFoundException;
 import com.ltp.gradesubmission.repository.StudentRepository;
 
@@ -20,11 +22,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student getStudent(Long id) {
         Optional<Student> student=studentRepository.findById(id);
-        if(student.isPresent()){
-            return student.get();
-        }else{
-           throw new StudentNotFoundException(id);
-        }
+       return unwrapStudent(student, id);
          
     }
 
@@ -41,6 +39,11 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> getStudents() {
         return (List<Student>) studentRepository.findAll();
+    }
+
+    public static Student unwrapStudent(Optional<Student> entity, Long id){
+        if(entity.isPresent()) return entity.get();
+        else throw new StudentNotFoundException(id);
     }
 
 }
